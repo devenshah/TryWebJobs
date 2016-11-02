@@ -57,7 +57,9 @@
       }
   },
   "variables": {
-    "webSiteName": "TryWebJobsWebApp"
+    "rootName": "TryWebJobs",
+    "webSiteName": "[concat(variables('rootName'),'WebApp')]",
+    "serviceBusName": "[concat(variables('rootName'),'SB')]"
   },
   "resources": [
     {
@@ -77,6 +79,37 @@
       }
     },
     {
+      "name": "[variables('serviceBusName')]",
+      "type": "Microsoft.ServiceBus/namespaces",
+      "kind": "Messaging",
+      "apiVersion": "2015-08-01",
+      "location": "South Central US",
+      "resources": [
+        {
+          "name": "requestQ",
+          "type": "queues",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusName'))]"
+          ],
+          "properties": {
+            "path": "requestQ"
+          }
+        },
+        {
+          "name": "responseQ",
+          "type": "queues",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusName'))]"
+          ],
+          "properties": {
+            "path": "responseQ"
+          }
+        }
+      ]
+    },
+    {
       "apiVersion": "2015-08-01",
       "name": "[variables('webSiteName')]",
       "type": "Microsoft.Web/sites",
@@ -86,34 +119,35 @@
         "displayName": "Website"
       },
       "dependsOn": [
-        "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
+        "[concat('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+        "[concat('Microsoft.ServiceBus/namespaces/', variables('serviceBusName'))]"
       ],
       "properties": {
         "name": "[variables('webSiteName')]",
         "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]"
       },
-        "resources": [
-            {
-                "name": "MSDeploy",
-                "type": "extensions",
-                "location": "[resourceGroup().location]",
-                "apiVersion": "2015-08-01",
-                "dependsOn": [
-                    "[resourceId('Microsoft.Web/sites', variables('webSiteName'))]"
-                ],
-                "tags": {
-                    "displayName": "WebJobsApp"
-                },
-                "properties": {
-                    "packageUri": "[concat(parameters('_artifactsLocation'), '/', parameters('WebJobsAppPackageFolder'), '/', parameters('WebJobsAppPackageFileName'), parameters('_artifactsLocationSasToken'))]",
-                    "dbType": "None",
-                    "connectionString": "",
-                    "setParameters": {
-                        "IIS Web Application Name": "[variables('webSiteName')]"
-                    }
-                }
+      "resources": [
+        {
+          "name": "MSDeploy",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('webSiteName'))]"
+          ],
+          "tags": {
+            "displayName": "WebJobsApp"
+          },
+          "properties": {
+            "packageUri": "[concat(parameters('_artifactsLocation'), '/', parameters('WebJobsAppPackageFolder'), '/', parameters('WebJobsAppPackageFileName'), parameters('_artifactsLocationSasToken'))]",
+            "dbType": "None",
+            "connectionString": "",
+            "setParameters": {
+              "IIS Web Application Name": "[variables('webSiteName')]"
             }
-        ]
+          }
+        }
+      ]
     },
     {
       "apiVersion": "2014-04-01",
@@ -211,7 +245,7 @@
         "action": {
           "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleEmailAction",
           "sendToServiceOwners": true,
-          "customEmails": [ ]
+          "customEmails": []
         }
       }
     },
@@ -245,7 +279,7 @@
         "action": {
           "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleEmailAction",
           "sendToServiceOwners": true,
-          "customEmails": [ ]
+          "customEmails": []
         }
       }
     },
@@ -279,7 +313,7 @@
         "action": {
           "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleEmailAction",
           "sendToServiceOwners": true,
-          "customEmails": [ ]
+          "customEmails": []
         }
       }
     },
@@ -313,7 +347,7 @@
         "action": {
           "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleEmailAction",
           "sendToServiceOwners": true,
-          "customEmails": [ ]
+          "customEmails": []
         }
       }
     },
