@@ -32,5 +32,12 @@
     <Content Include="WebSite.json" />
     <Content Include="WebSite.parameters.json" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TryWebJobs.Web\TryWebJobs.Web.csproj">
+      <Targets>Build;Package</Targets>
+      <AdditionalProperties>PackageLocation=..\TryWebJobs.Deploy\$(ProjectReferencesOutputPath)\TryWebJobs.Web\package.zip</AdditionalProperties>
+      <IncludeFilePath>$(ProjectReferencesOutputPath)\TryWebJobs.Web\package.zip</IncludeFilePath>
+    </ProjectReference>
+  </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />
 </Project>
