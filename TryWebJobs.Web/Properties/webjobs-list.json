@@ -3,6 +3,9 @@
   "WebJobs": [
     {
       "filePath": "../FromServiceBusToQueue/FromServiceBusToQueue.csproj"
+    },
+    {
+      "filePath": "../ServiceBusQtoQ/ServiceBusQtoQ.csproj"
     }
   ]
 }

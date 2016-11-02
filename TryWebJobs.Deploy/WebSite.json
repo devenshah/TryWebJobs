@@ -83,7 +83,7 @@
       "type": "Microsoft.ServiceBus/namespaces",
       "kind": "Messaging",
       "apiVersion": "2015-08-01",
-      "location": "South Central US",
+      "location": "[resourceGroup().location]",
       "resources": [
         {
           "name": "requestQ",
